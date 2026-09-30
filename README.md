@@ -23,10 +23,9 @@
 | Layer | Technology |
 |---|---|
 | **Backend** | Spring Boot 3.3.5 / 3.4.x, Java 21 LTS, Spring Web, Spring Security 6, Spring Data MongoDB, Lombok, Jakarta Validation, JJWT |
-| **Database** | MongoDB 7.0 |
+| **Database** | MongoDB 7.0 (Local MongoDB or MongoDB Atlas) |
 | **Frontend** | React 18/19, Vite, Tailwind CSS, Lucide React, Axios, Canvas Confetti |
 | **API Docs** | SpringDoc OpenAPI 2.6 (Swagger UI) |
-| **Container** | Docker & Docker Compose |
 
 ---
 
@@ -36,16 +35,16 @@
 - **Java 21 LTS** installed (`java -version`)
 - **Maven 3.8+** installed (`mvn -version`)
 - **Node.js 18+** & **npm** installed (`node -v`, `npm -v`)
-- **Docker** (optional, for instant MongoDB container)
+- **MongoDB** installed locally or access to a MongoDB instance (`mongodb://localhost:27017`)
 
 ---
 
 ### Step 1: Start MongoDB
-You can run MongoDB using Docker Compose with one command:
+Ensure your local MongoDB service is running (or configure your connection URI in `backend/src/main/resources/application.yml`):
 ```bash
-docker compose up -d
+# Verify MongoDB is running on localhost:27017
+mongosh --eval "db.adminCommand('ping')"
 ```
-*Or use any existing MongoDB server running on `mongodb://localhost:27017`.*
 
 ---
 
@@ -90,65 +89,6 @@ The platform is initialized with ready-to-test demo accounts across Indian citie
 
 ---
 
-## 🌐 Production Deployment Guide
-
-You can deploy FoodReach so real users worldwide can use it through any of the following methods:
-
-### Option 1: 100% Free Cloud Deployment (Recommended)
-
-#### Step 1: Set up Free MongoDB Atlas
-1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/atlas/database) and create a **Free Shared Cluster (M0)**.
-2. Under **Database Access**, create a database user and password.
-3. Under **Network Access**, add IP `0.0.0.0/0` (Allow access from anywhere).
-4. Copy your Connection String (e.g. `mongodb+srv://<username>:<password>@cluster0.mongodb.net/foodreach_db?retryWrites=true&w=majority`).
-
-#### Step 2: Deploy Backend to Render or Railway
-1. Push this repository to **GitHub**.
-2. Sign in to [Render.com](https://render.com) and click **New > Web Service**.
-3. Connect your GitHub repository.
-4. Set:
-   - **Root Directory**: `backend`
-   - **Environment**: `Docker` (or Java 21)
-   - **Dockerfile Path**: `backend/Dockerfile`
-5. Under **Environment Variables**, add:
-   - `SPRING_DATA_MONGODB_URI`: *Your MongoDB Atlas connection URI from Step 1*
-   - `APP_JWT_SECRET`: *Any 64-character secret key*
-   - `SPRING_PROFILES_ACTIVE`: `prod`
-6. Click **Deploy Web Service**. You will get a live backend URL (e.g. `https://foodreach-backend.onrender.com`).
-
-#### Step 3: Deploy Frontend to Vercel or Netlify
-1. Sign in to [Vercel.com](https://vercel.com) and click **Add New > Project**.
-2. Import your GitHub repository.
-3. Set:
-   - **Root Directory**: `frontend`
-   - **Framework Preset**: `Vite`
-   - **Build Command**: `npm run build`
-   - **Output Directory**: `dist`
-4. Under **Environment Variables**, add:
-   - `VITE_API_BASE_URL`: `https://your-backend-service.onrender.com/api`
-5. Click **Deploy**. Your frontend is live with SSL at `https://foodreach.vercel.app`!
-
----
-
-### Option 2: 1-Command Docker Deployment (VPS / DigitalOcean / AWS EC2)
-
-If you have a Linux or Windows VPS (Ubuntu, Debian, AWS EC2, DigitalOcean Droplet):
-
-1. Clone this repository on the server:
-   ```bash
-   git clone https://github.com/your-username/FoodReach.git
-   cd FoodReach
-   ```
-2. Launch the entire stack (MongoDB + Spring Boot Backend + React Nginx Frontend) in the background:
-   ```bash
-   docker compose up -d --build
-   ```
-3. Access your application immediately on your server IP or domain:
-   - Web App: `http://your-server-ip`
-   - Backend API: `http://your-server-ip:8080/api`
-
----
-
 ## 📡 REST API Summary
 
 ### Authentication (`/api/auth`)
@@ -183,7 +123,6 @@ If you have a Linux or Windows VPS (Ubuntu, Debian, AWS EC2, DigitalOcean Drople
 ```
 FoodReach/
 ├── backend/
-│   ├── Dockerfile
 │   ├── pom.xml
 │   ├── src/main/java/com/foodreach/
 │   │   ├── FoodReachApplication.java
@@ -197,9 +136,6 @@ FoodReach/
 │   └── src/main/resources/
 │       └── application.yml
 ├── frontend/
-│   ├── Dockerfile
-│   ├── nginx.conf
-│   ├── vercel.json
 │   ├── package.json
 │   ├── vite.config.js
 │   ├── tailwind.config.js
@@ -211,7 +147,5 @@ FoodReach/
 │       ├── pages/ (HomePage, ExplorePage, DonationDetailPage, CreateDonationPage, DonorDashboardPage, NgoDashboardPage, VolunteerDashboardPage, AdminDashboardPage, LoginPage, RegisterPage)
 │       ├── App.jsx
 │       └── main.jsx
-├── docker-compose.yml
-├── render.yaml
 └── README.md
 ```
